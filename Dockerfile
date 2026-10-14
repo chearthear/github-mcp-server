@@ -14,7 +14,7 @@ ARG VERSION="dev"
 WORKDIR /build
 
 # Install git
-RUN --mount=type=cache,target=/var/cache/apk \
+RUN --mount=type=cache,id=s/5bda3b5f-71a5-4f4c-b068-cde961f65c04-/var/cache/apk,target=/var/cache/apk \
     apk add git
 
 # Copy source code (including ui_dist placeholder)
@@ -25,8 +25,8 @@ COPY --from=ui-build /app/pkg/github/ui_dist/* ./pkg/github/ui_dist/
 
 # Build the server
 # OAuth credentials are injected via build secrets so they are not baked into image history; the values are public in practice but kept out of layers.
-RUN --mount=type=cache,target=/go/pkg/mod \
-    --mount=type=cache,target=/root/.cache/go-build \
+RUN --mount=type=cache,id=s/5bda3b5f-71a5-4f4c-b068-cde961f65c04-/go/pkg/mod,target=/go/pkg/mod \
+    --mount=type=cache,id=s/5bda3b5f-71a5-4f4c-b068-cde961f65c04-/root/.cache/go-build,target=/root/.cache/go-build \
     --mount=type=secret,id=oauth_client_id \
     --mount=type=secret,id=oauth_client_secret \
     export OAUTH_CLIENT_ID="$(cat /run/secrets/oauth_client_id 2>/dev/null || echo '')" && \
